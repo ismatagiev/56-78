@@ -1,44 +1,82 @@
 <?php
-require_once 'date.php';
-	class Interval
+
+class File implements iFile{
+	public $filePath;
+	public $text;
+
+		public function __construct($filePath){
+			$this->filePath = $filePath;
+
+}
+		public function getPath(){
+			return $this->filePath;
+		} // путь к файлу
+		public function getDir(){
+			$path_parts = pathinfo($this->filePath);
+			return $path_parts['dirname'];
+		}  // папка файла
+		public function getName(){
+			$path_parts = pathinfo($this->filePath);
+			return $path_parts['filename'];
+		} // имя файла
+		public function getExt(){
+			$path_parts = pathinfo($this->filePath);
+			return $path_parts['extension'];
+		}  // расширение файла
+		public function getSize(){
+			return filesize($this->filePath);
+		} // размер файла
+		
+		public function getText(){
+			return file_get_contents($this->filePath);
+		}          // получает текст файла
+		public function setText($text){
+			file_put_contents($this->filePath, $text);
+		}     // устанавливает текст файла
+		 public function appendText($text){
+			file_put_contents($this->filePath, '!', FILE_APPEND);
+		 }  // добавляет текст в конец файла
+		
+		public function copy($copyPath){
+			copy($this->filePath, $copyPath);
+		}   // копирует файл
+		public function delete(){
+			unlink($this->filePath);
+		}           // удаляет файл
+		public function rename($newName){
+			rename(pathinfo($this->filePath)['filename'].'.'.pathinfo($this->filePath)['extension'], $newName);
+		}   // переименовывает файл
+		public function replace($newPath){
+			rename($this->filePath, $newPath);
+		}  // перемещает файл
+
+}
+
+	interface iFile
 	{
-		public $interval;
-		public function __construct(Date $date1, Date $date2)
-		{
-			$this->interval = date('Y-m-d', strtotime($date2)-strtotime($date1));
-		}
+		public function __construct($filePath);
 		
-		public function toDays()
-		{
-			return  (int)strtotime($this->interval)/60/60/24;
-		// вернет разницу в днях
-		}
+		public function getPath(); // путь к файлу
+		public function getDir();  // папка файла
+		public function getName(); // имя файла
+		public function getExt();  // расширение файла
+		public function getSize(); // размер файла
 		
-		public function toMonths()
-		{
-			return  (int)strtotime($this->interval)/60/60/24/30;// вернет разницу в месяцах
-		}
+		public function getText();          // получает текст файла
+		public function setText($text);     // устанавливает текст файла
+		 public function appendText($text);  // добавляет текст в конец файла
 		
-		public function toYears()
-		{
-			return  (int)strtotime($this->interval)/60/60/24/30/12;// вернет разницу в годах
-		}
-		
-		public function __toString()
-		{
-			// выведет результат в виде массива
-			// ['years' => '', 'months' => '', 'days' => '']
-		}
+		public function copy($copyPath);    // копирует файл
+		public function delete();           // удаляет файл
+		public function rename($newName);   // переименовывает файл
+		public function replace($newPath);  // перемещает файл
 	}
 
-	$date1 = new Date('2025-12-31');
-	$date2 = new Date('2026-11-28');
-	
-	$interval = new Interval($date1, $date2);
-	
-	echo $interval->toDays().'<br>';   // выведет разницу в днях
-	echo $interval->toMonths().'<br>'; // выведет разницу в месяцах
-	echo $interval->toYears().'<br>';  // выведет разницу в годах
-	
-	var_dump($interval).'<br>'; // массив вида ['years' => '', 'months' => '', 'days' => '']
+$myF = new File('Exam\sok.txt');
+echo $myF->getPath().'<br>';
+echo $myF->getExt().'<br>';
+echo $myF->getSize().'<br>';
+echo $myF->getText().'<br>';
+echo $myF->appendText('iofdvkrmfrpf').'<br>';
+echo $myF->rename('Name.txt').'<br>';
 ?>
